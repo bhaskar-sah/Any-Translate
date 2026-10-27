@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Any-Translate</string>
+    <string name="app_tagline">Instant Multilingual Dictionary &amp; Translator</string>
+    <string name="search_hint">Type an English word or sentence...</string>
+    <string name="translate_button">Translate</string>
+    <string name="clear">Clear</string>
+
+    <!-- Language Labels -->
+    <string name="lang_all">All (DE, NE, HI)</string>
+    <string name="lang_german">🇩🇪 German</string>
+    <string name="lang_nepali">🇳🇵 Nepali</string>
+    <string name="lang_hindi">🇮🇳 Hindi</string>
+
+    <string name="german_title">German (Deutsch)</string>
+    <string name="nepali_title">Nepali (नेपाली)</string>
+    <string name="hindi_title">Hindi (हिन्दी)</string>
+
+    <!-- Features & Actions -->
+    <string name="speak_label">Pronounce</string>
+    <string name="copy_label">Copy</string>
+    <string name="share_label">Share</string>
+    <string name="favorite_label">Favorite</string>
+    <string name="history_title">Recent Translations</string>
+    <string name="favorites_title">Saved Bookmarks</string>
+    <string name="clear_history">Clear History</string>
+    <string name="no_history">No recent searches yet</string>
+
+    <!-- Badges & Status -->
+    <string name="mode_offline_dict">Offline Dictionary</string>
+    <string name="mode_mlkit">On-Device AI (ML Kit)</string>
+    <string name="mode_cloud">Cloud Translation</string>
+    <string name="model_downloading">Downloading offline AI language model…</string>
+    <string name="model_ready">AI Language model ready</string>
+    <string name="model_failed">Model download failed. Using offline dictionary.</string>
+    <string name="copied_toast">Copied to clipboard!</string>
+    <string name="empty_query_error">Please enter a word to translate</string>
+
+    <!-- AdMob Test Unit IDs (Replace with your live IDs from AdMob dashboard for release) -->
+    <string name="admob_banner_test_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="admob_interstitial_test_id">ca-app-pub-3940256099942544/1033173712</string>
+</resources>
