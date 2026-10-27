@@ -5,7 +5,7 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.24-blue.svg)](https://kotlinlang.org)
 [![Platform](https://img.shields.io/badge/Platform-Android%20(API%2024%2B)-green.svg)](https://developer.android.com)
 
-> An offline-first, AI-powered multilingual Android dictionary and translation application that translates English words and phrases into **German (🇩🇪)**, **Nepali (🇳🇵)**, and **Hindi (🇮🇳)** simultaneously.
+> An offline-first, AI-powered universal multilingual Android dictionary and translation application that enables translating in **ANY** direction between **English (🇬🇧)**, **German (🇩🇪)**, **Nepali (🇳🇵)**, and **Hindi (🇮🇳)** with automatic language identification.
 
 ---
 
@@ -14,35 +14,40 @@
 Any-Translate combines high-performance on-device neural machine translation with a rich, pre-loaded SQLite offline database to deliver instant, zero-cost translations.
 
 ```
-                              ┌───────────────────────┐
-                              │  User Query (English)  │
-                              └───────────┬───────────┘
-                                          │
-                                          ▼
-                         ┌─────────────────────────────────┐
-                         │   TranslationRepository (SSOT)  │
-                         └──────────────┬──────────────────┘
-                                        │
-           ┌────────────────────────────┼───────────────────────────┐
-           ▼                            ▼                           ▼
-┌───────────────────────┐    ┌───────────────────────┐    ┌───────────────────────┐
-│ Room Offline Database │    │ Google ML Kit AI      │    │ Online Fallback API   │
-│ - 100% Offline        │    │ - On-Device Neural MT │    │ - Extended Nepali     │
-│ - Instant Definitions │    │ - English ➔ German    │    │ - Novel Full Phrases  │
-│ - Transliterations    │    │ - English ➔ Hindi     │    │ - Free, No API Keys   │
-│ - Example Sentences   │    │ - Zero Cloud Costs    │    │                       │
-└───────────────────────┘    └───────────────────────┘    └───────────────────────┘
+                         ┌──────────────────────────────────────────────┐
+                         │   Input (English, German, Nepali or Hindi)   │
+                         └──────────────────────┬───────────────────────┘
+                                                │
+                                                ▼
+                         ┌──────────────────────────────────────────────┐
+                         │  Language Detection (Auto / Manual Selection) │
+                         └──────────────────────┬───────────────────────┘
+                                                │
+                                                ▼
+                         ┌──────────────────────────────────────────────┐
+                         │         TranslationRepository (SSOT)         │
+                         └──────────────────────┬───────────────────────┘
+                                                │
+           ┌────────────────────────────────────┼────────────────────────────────────┐
+           ▼                                    ▼                                    ▼
+┌─────────────────────────┐          ┌─────────────────────────┐          ┌─────────────────────────┐
+│ Room Offline Database   │          │ Google ML Kit AI        │          │ Free Online Fallback    │
+│ • Universal Lookups     │          │ • On-Device Neural MT   │          │ • Extended Queries      │
+│ • Instant Definitions   │          │ • English ⇄ German      │          │ • Free, No API Keys     │
+│ • Bilingual Examples    │          │ • English ⇄ Hindi       │          │ • Multi-pair coverage   │
+└─────────────────────────┘          └─────────────────────────┘          └─────────────────────────┘
 ```
 
 ### Key Features
-* 🌍 **Simultaneous Tri-Lingual Output**: Displays German, Nepali (Devanagari script), and Hindi (Devanagari script) results in dedicated Material 3 cards side-by-side or scrollable.
-* ⚡ **100% Offline SQLite / Room Dictionary**: Pre-loaded vocabulary database containing common English words, parts of speech, phonetic transliterations, and contextual example sentences.
-* 🧠 **On-Device Google ML Kit Neural Translation**: Automatic download and local execution of neural machine translation models for German and Hindi.
-* 🔊 **Native Text-To-Speech (TTS)**: Hear audio pronunciations spoken aloud in German and Hindi.
+* 🔄 **Any-to-Any Universal Translation**: Type input in **English**, **German**, **Nepali**, or **Hindi**, and the app translates into all other 3 languages simultaneously.
+* ✨ **On-Device AI Language Auto-Detection**: Uses Google ML Kit Language Identification and script detection to detect the input language in milliseconds.
+* ⚡ **100% Offline SQLite / Room Dictionary**: Pre-loaded vocabulary database containing common words, parts of speech, phonetic transliterations, and contextual example sentences queryable in any language.
+* 🧠 **On-Device Google ML Kit Neural Translation**: On-device neural machine translation models for German and Hindi.
+* 🔊 **Native Text-To-Speech (TTS)**: Listen to audio pronunciations spoken aloud in English, German, and Hindi.
 * 📋 **One-Tap Actions**: Copy translation to clipboard, share to WhatsApp/SMS, or star/bookmark to saved favorites.
 * 📜 **Search History & Bookmarks**: Full offline persistence for recent lookups and favorited vocabulary.
-* 💰 **AdMob Monetization Ready**: Integrated Google AdMob Banner and frequency-capped Interstitial ads using official test IDs, ready to swap to live IDs for Google Play Store deployment.
-* 🌐 **Companion Web Simulator**: Test the dictionary engine immediately in your browser via `web/index.html`.
+* 💰 **AdMob Monetization Ready**: Integrated Google AdMob Banner and frequency-capped Interstitial ads using official test IDs.
+* 🌐 **Companion Web Simulator**: Test the universal dictionary engine immediately in your browser via `web/index.html`.
 
 ---
 

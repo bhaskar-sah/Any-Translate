@@ -7,7 +7,12 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "dictionary",
-    indices = [Index(value = ["english_word"], unique = true)]
+    indices = [
+        Index(value = ["english_word"]),
+        Index(value = ["german_meaning"]),
+        Index(value = ["hindi_meaning"]),
+        Index(value = ["nepali_meaning"])
+    ]
 )
 data class DictionaryEntity(
     @PrimaryKey(autoGenerate = true)
@@ -61,14 +66,20 @@ data class TranslationHistoryEntity(
     @ColumnInfo(name = "query_text")
     val queryText: String,
 
+    @ColumnInfo(name = "source_lang")
+    val sourceLang: String = "en",
+
+    @ColumnInfo(name = "english_translation")
+    val englishTranslation: String = "",
+
     @ColumnInfo(name = "german_translation")
-    val germanTranslation: String,
+    val germanTranslation: String = "",
 
     @ColumnInfo(name = "nepali_translation")
-    val nepaliTranslation: String,
+    val nepaliTranslation: String = "",
 
     @ColumnInfo(name = "hindi_translation")
-    val hindiTranslation: String,
+    val hindiTranslation: String = "",
 
     @ColumnInfo(name = "is_favorite")
     val isFavorite: Boolean = false,

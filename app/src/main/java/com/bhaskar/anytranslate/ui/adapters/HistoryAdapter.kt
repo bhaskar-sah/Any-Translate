@@ -34,7 +34,14 @@ class HistoryAdapter(
 
         fun bind(item: TranslationHistoryEntity) {
             binding.tvQuery.text = item.queryText
-            binding.tvTranslationsSummary.text = "DE: ${item.germanTranslation} • NE: ${item.nepaliTranslation} • HI: ${item.hindiTranslation}"
+
+            val summaries = buildList {
+                if (item.englishTranslation.isNotBlank()) add("EN: ${item.englishTranslation}")
+                if (item.germanTranslation.isNotBlank()) add("DE: ${item.germanTranslation}")
+                if (item.nepaliTranslation.isNotBlank()) add("NE: ${item.nepaliTranslation}")
+                if (item.hindiTranslation.isNotBlank()) add("HI: ${item.hindiTranslation}")
+            }
+            binding.tvTranslationsSummary.text = summaries.joinToString(" • ")
 
             val iconRes = if (item.isFavorite) R.drawable.ic_bookmark else R.drawable.ic_bookmark_border
             binding.btnToggleBookmark.setIconResource(iconRes)

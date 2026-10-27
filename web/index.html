@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Any-Translate | Multi-Language Dictionary &amp; Translator</title>
+  <title>Any-Translate | Universal Multilingual Dictionary &amp; Translator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,9 +17,6 @@
       --text: #0F172A;
       --text-muted: #64748B;
       --border: #E2E8F0;
-      --german-accent: #EF4444;
-      --nepali-accent: #3B82F6;
-      --hindi-accent: #F97316;
       --card-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
     }
 
@@ -95,6 +92,21 @@
       width: 100%;
       margin: 0 auto;
       padding: 24px 16px;
+    }
+
+    .section-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .source-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .search-card {
@@ -176,12 +188,12 @@
       transform: scale(0.98);
     }
 
-    .filter-chips {
+    .chips-group {
       display: flex;
       gap: 8px;
       overflow-x: auto;
       padding-bottom: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .chip {
@@ -189,7 +201,7 @@
       border: 1px solid var(--border);
       padding: 8px 16px;
       border-radius: 30px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
@@ -224,6 +236,22 @@
     .suggestion-tag:hover {
       background: var(--primary-light);
       color: var(--primary);
+    }
+
+    .detected-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+
+    .detected-badge {
+      background: #E0F2FE;
+      color: #0369A1;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
     }
 
     .results-container {
@@ -330,7 +358,6 @@
       border-color: var(--primary);
     }
 
-    /* Ad Banner Mockup */
     .ad-banner {
       background: #E2E8F0;
       border: 2px dashed #94A3B8;
@@ -378,42 +405,60 @@
       <div class="logo-badge">🌐</div>
       <div>
         <div class="brand-title">Any-Translate</div>
-        <div class="brand-sub">English ➔ German • Nepali • Hindi</div>
+        <div class="brand-sub">Universal Multilingual Translator</div>
       </div>
     </div>
-    <span class="header-tag">100% Offline AI Ready</span>
+    <span class="header-tag">Any-to-Any Translation</span>
   </header>
 
   <main>
+    <!-- Source Language Selection -->
+    <div class="section-label">Translate from:</div>
+    <div class="source-selector" id="sourceSelector">
+      <button class="chip active" data-source="auto">✨ Auto-Detect</button>
+      <button class="chip" data-source="en">🇬🇧 English</button>
+      <button class="chip" data-source="de">🇩🇪 German</button>
+      <button class="chip" data-source="ne">🇳🇵 Nepali</button>
+      <button class="chip" data-source="hi">🇮🇳 Hindi</button>
+    </div>
+
     <div class="search-card">
       <div class="input-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Type an English word or phrase (e.g. Hello, Water, Peace)..." autofocus>
+        <input type="text" id="searchInput" class="search-input" placeholder="Type in any language (English, German, Nepali, Hindi)..." autofocus>
         <button id="clearBtn" class="clear-btn">✕</button>
       </div>
 
+      <!-- Quick Multilingual Suggestions -->
       <div class="suggestions-list" id="suggestions">
-        <span class="suggestion-tag" onclick="selectSuggestion('hello')">hello</span>
-        <span class="suggestion-tag" onclick="selectSuggestion('thank you')">thank you</span>
-        <span class="suggestion-tag" onclick="selectSuggestion('water')">water</span>
-        <span class="suggestion-tag" onclick="selectSuggestion('beautiful')">beautiful</span>
-        <span class="suggestion-tag" onclick="selectSuggestion('friend')">friend</span>
-        <span class="suggestion-tag" onclick="selectSuggestion('mountain')">mountain</span>
+        <span class="suggestion-tag" onclick="selectSuggestion('hello', 'en')">🇬🇧 hello</span>
+        <span class="suggestion-tag" onclick="selectSuggestion('Guten Morgen', 'de')">🇩🇪 Guten Morgen</span>
+        <span class="suggestion-tag" onclick="selectSuggestion('नमस्ते', 'ne')">🇳🇵 नमस्ते (Namaste)</span>
+        <span class="suggestion-tag" onclick="selectSuggestion('धन्यवाद', 'hi')">🇮🇳 धन्यवाद (Dhanyavaad)</span>
+        <span class="suggestion-tag" onclick="selectSuggestion('Wasser', 'de')">🇩🇪 Wasser</span>
+        <span class="suggestion-tag" onclick="selectSuggestion('किताब', 'hi')">🇮🇳 किताब</span>
       </div>
 
       <div class="action-row">
         <button id="translateBtn" class="btn-translate">
-          <span>Translate</span> ➔
+          <span>Translate to other languages</span> ➔
         </button>
       </div>
     </div>
 
-    <!-- Filter Chips -->
-    <div class="filter-chips">
-      <button class="chip active" data-lang="all">All Languages</button>
-      <button class="chip" data-lang="german">🇩🇪 German</button>
-      <button class="chip" data-lang="nepali">🇳🇵 Nepali</button>
-      <button class="chip" data-lang="hindi">🇮🇳 Hindi</button>
+    <!-- Status & Target Filters -->
+    <div class="detected-status-bar" id="statusBar" style="display: none;">
+      <span class="detected-badge" id="detectedBadge">Input: Auto-Detected</span>
+      <span style="color: var(--text-muted); font-size: 0.8rem;">Ready</span>
+    </div>
+
+    <div class="section-label">Show Target:</div>
+    <div class="chips-group" id="targetFilters">
+      <button class="chip active" data-target="all">All Targets</button>
+      <button class="chip" data-target="en" id="chipTargetEn">🇬🇧 English</button>
+      <button class="chip" data-target="de" id="chipTargetDe">🇩🇪 German</button>
+      <button class="chip" data-target="ne" id="chipTargetNe">🇳🇵 Nepali</button>
+      <button class="chip" data-target="hi" id="chipTargetHi">🇮🇳 Hindi</button>
     </div>
 
     <!-- Results Output -->
@@ -433,14 +478,13 @@
 
   <script>
     let dictionary = [];
-    let currentFilter = 'all';
+    let currentSource = 'auto';
+    let currentTargetFilter = 'all';
 
-    // Fetch dictionary data
     fetch('../app/src/main/assets/dictionary.json')
       .then(res => res.json())
       .then(data => {
         dictionary = data;
-        // Default translation
         doTranslate('hello');
       })
       .catch(err => {
@@ -451,6 +495,8 @@
     const clearBtn = document.getElementById('clearBtn');
     const translateBtn = document.getElementById('translateBtn');
     const resultsContainer = document.getElementById('resultsContainer');
+    const statusBar = document.getElementById('statusBar');
+    const detectedBadge = document.getElementById('detectedBadge');
     const toast = document.getElementById('toast');
 
     searchInput.addEventListener('input', () => {
@@ -464,25 +510,42 @@
     });
 
     searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        doTranslate(searchInput.value);
-      }
+      if (e.key === 'Enter') doTranslate(searchInput.value);
     });
 
     translateBtn.addEventListener('click', () => {
       doTranslate(searchInput.value);
     });
 
-    document.querySelectorAll('.chip').forEach(chip => {
+    // Source Selector
+    document.querySelectorAll('#sourceSelector .chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('#sourceSelector .chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
-        currentFilter = chip.dataset.lang;
+        currentSource = chip.dataset.source;
+
+        const placeholders = {
+          auto: "Type in any language (English, German, Nepali, Hindi)...",
+          en: "Type in English...",
+          de: "Auf Deutsch eingeben (German)...",
+          ne: "नेपालीमा लेख्नुहोस् (Nepali)...",
+          hi: "हिन्दी में लिखें (Hindi)..."
+        };
+        searchInput.placeholder = placeholders[currentSource] || placeholders.auto;
+      });
+    });
+
+    // Target Filter
+    document.querySelectorAll('#targetFilters .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#targetFilters .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentTargetFilter = chip.dataset.target;
         updateCardVisibility();
       });
     });
 
-    function selectSuggestion(word) {
+    function selectSuggestion(word, lang) {
       searchInput.value = word;
       clearBtn.style.display = 'block';
       doTranslate(word);
@@ -511,81 +574,144 @@
       });
     }
 
-    function shareText(query, lang, text) {
+    function shareText(lang, text) {
       if (navigator.share) {
         navigator.share({
           title: 'Any-Translate',
-          text: `English: ${query}\n${lang}: ${text}\n\nTranslated with Any-Translate`
+          text: `${lang}: ${text}\n\nTranslated with Any-Translate`
         }).catch(() => {});
       } else {
-        copyText(`English: ${query}\n${lang}: ${text}`);
+        copyText(`${lang}: ${text}`);
       }
+    }
+
+    function detectLanguage(query, match) {
+      if (currentSource !== 'auto') return currentSource;
+      if (match) {
+        const q = query.toLowerCase();
+        if (match.english.toLowerCase() === q) return 'en';
+        if (match.german.toLowerCase() === q) return 'de';
+        if (match.nepali.toLowerCase() === q || (match.nepali_translit && match.nepali_translit.toLowerCase() === q)) return 'ne';
+        if (match.hindi.toLowerCase() === q || (match.hindi_translit && match.hindi_translit.toLowerCase() === q)) return 'hi';
+      }
+
+      // Check Unicode range for Devanagari
+      const hasDevanagari = /[\u0900-\u097F]/.test(query);
+      if (hasDevanagari) return 'ne'; // or 'hi'
+
+      // Check German umlauts
+      if (/[äöüßÄÖÜ]/.test(query)) return 'de';
+
+      return 'en';
     }
 
     function doTranslate(query) {
-      const q = query.trim().toLowerCase();
+      const q = query.trim();
       if (!q) {
-        showToast('Please type a word');
+        showToast('Please type something');
         return;
       }
 
-      const match = dictionary.find(item => item.english.toLowerCase() === q);
-      renderResults(q, match);
+      const qLower = q.toLowerCase();
+      // Search across all languages in dictionary
+      const match = dictionary.find(item =>
+        item.english.toLowerCase() === qLower ||
+        item.german.toLowerCase() === qLower ||
+        item.nepali.toLowerCase() === qLower ||
+        (item.nepali_translit && item.nepali_translit.toLowerCase() === qLower) ||
+        item.hindi.toLowerCase() === qLower ||
+        (item.hindi_translit && item.hindi_translit.toLowerCase() === qLower)
+      );
+
+      const resolvedSource = detectLanguage(q, match);
+      const langNames = { en: '🇬🇧 English', de: '🇩🇪 German', ne: '🇳🇵 Nepali', hi: '🇮🇳 Hindi' };
+
+      statusBar.style.display = 'flex';
+      detectedBadge.textContent = `Input: ${langNames[resolvedSource]} ${currentSource === 'auto' ? '(Auto-Detected)' : ''}`;
+
+      renderResults(q, resolvedSource, match);
     }
 
-    function renderResults(query, item) {
+    function renderResults(query, sourceLang, item) {
       resultsContainer.innerHTML = '';
 
+      // Hide the source language from the target chips
+      document.getElementById('chipTargetEn').style.display = (sourceLang === 'en') ? 'none' : 'inline-block';
+      document.getElementById('chipTargetDe').style.display = (sourceLang === 'de') ? 'none' : 'inline-block';
+      document.getElementById('chipTargetNe').style.display = (sourceLang === 'ne') ? 'none' : 'inline-block';
+      document.getElementById('chipTargetHi').style.display = (sourceLang === 'hi') ? 'none' : 'inline-block';
+
       if (item) {
-        // German Card
-        resultsContainer.appendChild(createCard({
-          id: 'card-german',
-          flag: '🇩🇪',
-          lang: 'German (Deutsch)',
-          source: 'Offline Dict',
-          word: item.german,
-          phonetic: `${item.german_phonetic || ''} • ${item.part_of_speech || ''}`,
-          exampleTarget: item.example_de,
-          exampleEn: item.example_en,
-          ttsLang: 'de-DE',
-          query: query
-        }));
+        // English Card (if source != en)
+        if (sourceLang !== 'en') {
+          resultsContainer.appendChild(createCard({
+            id: 'card-en',
+            langCode: 'en',
+            flag: '🇬🇧',
+            lang: 'English',
+            source: 'Offline Dict',
+            word: item.english,
+            phonetic: item.part_of_speech || '',
+            exampleTarget: item.example_en,
+            exampleEn: '',
+            ttsLang: 'en-US'
+          }));
+        }
 
-        // Nepali Card
-        resultsContainer.appendChild(createCard({
-          id: 'card-nepali',
-          flag: '🇳🇵',
-          lang: 'Nepali (नेपाली)',
-          source: 'Offline Dict',
-          word: item.nepali,
-          phonetic: `${item.nepali_translit || ''} • ${item.part_of_speech || ''}`,
-          exampleTarget: item.example_ne,
-          exampleEn: item.example_en,
-          ttsLang: 'hi-IN',
-          query: query
-        }));
+        // German Card (if source != de)
+        if (sourceLang !== 'de') {
+          resultsContainer.appendChild(createCard({
+            id: 'card-de',
+            langCode: 'de',
+            flag: '🇩🇪',
+            lang: 'German (Deutsch)',
+            source: 'Offline Dict',
+            word: item.german,
+            phonetic: `${item.german_phonetic || ''} • ${item.part_of_speech || ''}`,
+            exampleTarget: item.example_de,
+            exampleEn: item.example_en,
+            ttsLang: 'de-DE'
+          }));
+        }
 
-        // Hindi Card
-        resultsContainer.appendChild(createCard({
-          id: 'card-hindi',
-          flag: '🇮🇳',
-          lang: 'Hindi (हिन्दी)',
-          source: 'Offline Dict',
-          word: item.hindi,
-          phonetic: `${item.hindi_translit || ''} • ${item.part_of_speech || ''}`,
-          exampleTarget: item.example_hi,
-          exampleEn: item.example_en,
-          ttsLang: 'hi-IN',
-          query: query
-        }));
+        // Nepali Card (if source != ne)
+        if (sourceLang !== 'ne') {
+          resultsContainer.appendChild(createCard({
+            id: 'card-ne',
+            langCode: 'ne',
+            flag: '🇳🇵',
+            lang: 'Nepali (नेपाली)',
+            source: 'Offline Dict',
+            word: item.nepali,
+            phonetic: `${item.nepali_translit || ''} • ${item.part_of_speech || ''}`,
+            exampleTarget: item.example_ne,
+            exampleEn: item.example_en,
+            ttsLang: 'hi-IN'
+          }));
+        }
+
+        // Hindi Card (if source != hi)
+        if (sourceLang !== 'hi') {
+          resultsContainer.appendChild(createCard({
+            id: 'card-hi',
+            langCode: 'hi',
+            flag: '🇮🇳',
+            lang: 'Hindi (हिन्दी)',
+            source: 'Offline Dict',
+            word: item.hindi,
+            phonetic: `${item.hindi_translit || ''} • ${item.part_of_speech || ''}`,
+            exampleTarget: item.example_hi,
+            exampleEn: item.example_en,
+            ttsLang: 'hi-IN'
+          }));
+        }
       } else {
-        // Fallback card when word is not in preloaded database
         resultsContainer.innerHTML = `
           <div class="result-card" style="text-align:center; padding: 32px;">
             <div style="font-size: 32px; margin-bottom: 12px;">🧠</div>
             <h3 style="margin-bottom: 8px;">Word "${query}" not in local dictionary</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem;">
-              On Android, Google ML Kit and the cloud fallback translation engine dynamically translate novel sentences and phrases.
+              On Android, Google ML Kit and the cloud fallback translation engine dynamically translate sentences and phrases between all languages.
             </p>
           </div>
         `;
@@ -598,6 +724,7 @@
       const card = document.createElement('div');
       card.className = 'result-card';
       card.id = data.id;
+      card.dataset.langCode = data.langCode;
 
       card.innerHTML = `
         <div class="card-header">
@@ -614,7 +741,7 @@
         ${data.exampleTarget ? `
           <div class="example-box">
             <div class="example-target">${data.exampleTarget}</div>
-            <div class="example-en">${data.exampleEn}</div>
+            ${data.exampleEn ? `<div class="example-en">${data.exampleEn}</div>` : ''}
           </div>
         ` : ''}
 
@@ -627,21 +754,20 @@
 
       card.querySelector('.btn-speak').addEventListener('click', () => speakText(data.word, data.ttsLang));
       card.querySelector('.btn-copy').addEventListener('click', () => copyText(data.word));
-      card.querySelector('.btn-share').addEventListener('click', () => shareText(data.query, data.lang, data.word));
+      card.querySelector('.btn-share').addEventListener('click', () => shareText(data.lang, data.word));
 
       return card;
     }
 
     function updateCardVisibility() {
-      const germanCard = document.getElementById('card-german');
-      const nepaliCard = document.getElementById('card-nepali');
-      const hindiCard = document.getElementById('card-hindi');
-
-      if (!germanCard || !nepaliCard || !hindiCard) return;
-
-      germanCard.style.display = (currentFilter === 'all' || currentFilter === 'german') ? 'block' : 'none';
-      nepaliCard.style.display = (currentFilter === 'all' || currentFilter === 'nepali') ? 'block' : 'none';
-      hindiCard.style.display = (currentFilter === 'all' || currentFilter === 'hindi') ? 'block' : 'none';
+      document.querySelectorAll('.result-card[data-lang-code]').forEach(card => {
+        const code = card.dataset.langCode;
+        if (currentTargetFilter === 'all' || currentTargetFilter === code) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     }
   </script>
 </body>

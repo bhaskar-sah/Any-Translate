@@ -9,6 +9,7 @@ import com.bhaskar.anytranslate.data.local.TranslationHistoryEntity
 import com.bhaskar.anytranslate.data.ml.MLKitTranslationManager
 import com.bhaskar.anytranslate.data.ml.ModelDownloadState
 import com.bhaskar.anytranslate.data.model.CombinedTranslation
+import com.bhaskar.anytranslate.data.model.Language
 import com.bhaskar.anytranslate.data.repository.TranslationRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +21,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class SelectedLanguageFilter {
+enum class SelectedTargetFilter {
     ALL,
+    ENGLISH,
     GERMAN,
     NEPALI,
     HINDI
@@ -44,11 +46,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    // Null sourceLanguage means Auto-Detect
+    private val _sourceLanguage = MutableStateFlow<Language?>(null)
+    val sourceLanguage: StateFlow<Language?> = _sourceLanguage.asStateFlow()
+
+    private val _selectedTargetFilter = MutableStateFlow(SelectedTargetFilter.ALL)
+    val selectedTargetFilter: StateFlow<SelectedTargetFilter> = _selectedTargetFilter.asStateFlow()
+
     private val _currentTranslation = MutableStateFlow<CombinedTranslation?>(null)
     val currentTranslation: StateFlow<CombinedTranslation?> = _currentTranslation.asStateFlow()
-
-    private val _selectedFilter = MutableStateFlow(SelectedLanguageFilter.ALL)
-    val selectedFilter: StateFlow<SelectedLanguageFilter> = _selectedFilter.asStateFlow()
 
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
@@ -60,20 +66,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
-        // Pre-download / verify ML models in background
         viewModelScope.launch {
             mlKitManager.prepareModels()
         }
     }
 
-    fun setFilter(filter: SelectedLanguageFilter) {
-        _selectedFilter.value = filter
+    fun setSourceLanguage(language: Language?) {
+        _sourceLanguage.value = language
+    }
+
+    fun setTargetFilter(filter: SelectedTargetFilter) {
+        _selectedTargetFilter.value = filter
     }
 
     fun translate(query: String) {
         if (query.isBlank()) {
             viewModelScope.launch {
-                _errorMessage.emit("Please enter a word to translate")
+                _errorMessage.emit("Please enter text to translate")
             }
             return
         }
@@ -81,7 +90,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val result = repository.translate(query)
+                val result = repository.translate(query, _sourceLanguage.value)
                 _currentTranslation.value = result
             } catch (e: Exception) {
                 _errorMessage.emit(e.localizedMessage ?: "Translation failed")
@@ -96,13 +105,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val newStatus = !isCurrentlyFavorite
             repository.toggleFavorite(query, newStatus)
 
-            // Update current displayed translation if matches
             val current = _currentTranslation.value
             if (current != null && current.query.equals(query, ignoreCase = true)) {
                 _currentTranslation.value = current.copy(
-                    german = current.german.copy(isBookmarked = newStatus),
-                    nepali = current.nepali.copy(isBookmarked = newStatus),
-                    hindi = current.hindi.copy(isBookmarked = newStatus)
+                    translations = current.translations.map { it.copy(isBookmarked = newStatus) }
                 )
             }
         }

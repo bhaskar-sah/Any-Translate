@@ -1,5 +1,6 @@
 package com.bhaskar.anytranslate.data.api
 
+import com.bhaskar.anytranslate.data.model.Language
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
@@ -19,12 +20,13 @@ class OnlineTranslationService {
     private val gson = Gson()
 
     /**
-     * Translates English text to Nepali using free REST API.
+     * Translates text between any two supported languages via free public API.
      */
-    suspend fun translateEnglishToNepali(text: String): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun translate(text: String, from: Language, to: Language): Result<String> = withContext(Dispatchers.IO) {
         try {
             val encoded = URLEncoder.encode(text.trim(), "UTF-8")
-            val url = "https://api.mymemory.translated.net/get?q=$encoded&langpair=en|ne"
+            val langPair = "${from.code}|${to.code}"
+            val url = "https://api.mymemory.translated.net/get?q=$encoded&langpair=$langPair"
 
             val request = Request.Builder()
                 .url(url)

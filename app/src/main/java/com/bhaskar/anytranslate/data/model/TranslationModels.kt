@@ -1,9 +1,22 @@
 package com.bhaskar.anytranslate.data.model
 
 enum class Language(val code: String, val displayName: String, val flag: String) {
+    ENGLISH("en", "English", "🇬🇧"),
     GERMAN("de", "German", "🇩🇪"),
     NEPALI("ne", "Nepali", "🇳🇵"),
-    HINDI("hi", "Hindi", "🇮🇳")
+    HINDI("hi", "Hindi", "🇮🇳");
+
+    companion object {
+        fun fromCode(code: String): Language? {
+            return when (code.lowercase().trim()) {
+                "en" -> ENGLISH
+                "de" -> GERMAN
+                "ne" -> NEPALI
+                "hi" -> HINDI
+                else -> null
+            }
+        }
+    }
 }
 
 enum class TranslationSource(val label: String) {
@@ -25,8 +38,11 @@ data class SingleTranslation(
 
 data class CombinedTranslation(
     val query: String,
-    val german: SingleTranslation,
-    val nepali: SingleTranslation,
-    val hindi: SingleTranslation,
+    val sourceLanguage: Language,
+    val isAutoDetected: Boolean = false,
+    val translations: List<SingleTranslation>,
     val timestamp: Long = System.currentTimeMillis()
-)
+) {
+    fun getTranslation(language: Language): SingleTranslation? =
+        translations.find { it.language == language }
+}

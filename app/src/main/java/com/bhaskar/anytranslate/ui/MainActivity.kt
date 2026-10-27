@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -50,7 +49,8 @@ class MainActivity : AppCompatActivity() {
 
         setupAdMobBanner()
         setupSearchInput()
-        setupLanguageChips()
+        setupSourceLanguageChips()
+        setupTargetFilterChips()
         setupHeaderActions()
         observeViewModel()
     }
@@ -82,13 +82,41 @@ class MainActivity : AppCompatActivity() {
         adMobHelper.onTranslationPerformed(this)
     }
 
-    private fun setupLanguageChips() {
-        binding.chipGroupLanguages.setOnCheckedStateChangeListener { _, checkedIds ->
+    private fun setupSourceLanguageChips() {
+        binding.chipGroupSource.setOnCheckedStateChangeListener { _, checkedIds ->
             when {
-                checkedIds.contains(R.id.chipGerman) -> viewModel.setFilter(SelectedLanguageFilter.GERMAN)
-                checkedIds.contains(R.id.chipNepali) -> viewModel.setFilter(SelectedLanguageFilter.NEPALI)
-                checkedIds.contains(R.id.chipHindi) -> viewModel.setFilter(SelectedLanguageFilter.HINDI)
-                else -> viewModel.setFilter(SelectedLanguageFilter.ALL)
+                checkedIds.contains(R.id.chipSourceEnglish) -> {
+                    viewModel.setSourceLanguage(Language.ENGLISH)
+                    binding.textInputLayout.hint = "Type in English..."
+                }
+                checkedIds.contains(R.id.chipSourceGerman) -> {
+                    viewModel.setSourceLanguage(Language.GERMAN)
+                    binding.textInputLayout.hint = "Auf Deutsch eingeben (German)..."
+                }
+                checkedIds.contains(R.id.chipSourceNepali) -> {
+                    viewModel.setSourceLanguage(Language.NEPALI)
+                    binding.textInputLayout.hint = "नेपालीमा लेख्नुहोस् (Nepali)..."
+                }
+                checkedIds.contains(R.id.chipSourceHindi) -> {
+                    viewModel.setSourceLanguage(Language.HINDI)
+                    binding.textInputLayout.hint = "हिन्दी में लिखें (Hindi)..."
+                }
+                else -> {
+                    viewModel.setSourceLanguage(null)
+                    binding.textInputLayout.hint = getString(R.string.search_hint)
+                }
+            }
+        }
+    }
+
+    private fun setupTargetFilterChips() {
+        binding.chipGroupTargets.setOnCheckedStateChangeListener { _, checkedIds ->
+            when {
+                checkedIds.contains(R.id.chipTargetEnglish) -> viewModel.setTargetFilter(SelectedTargetFilter.ENGLISH)
+                checkedIds.contains(R.id.chipTargetGerman) -> viewModel.setTargetFilter(SelectedTargetFilter.GERMAN)
+                checkedIds.contains(R.id.chipTargetNepali) -> viewModel.setTargetFilter(SelectedTargetFilter.NEPALI)
+                checkedIds.contains(R.id.chipTargetHindi) -> viewModel.setTargetFilter(SelectedTargetFilter.HINDI)
+                else -> viewModel.setTargetFilter(SelectedTargetFilter.ALL)
             }
         }
     }
@@ -115,8 +143,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 launch {
-                    viewModel.selectedFilter.collectLatest { filter ->
-                        applyFilterVisibility(filter)
+                    viewModel.selectedTargetFilter.collectLatest {
+                        updateResultsVisibility()
                     }
                 }
 
@@ -147,10 +175,24 @@ class MainActivity : AppCompatActivity() {
                         if (translation != null) {
                             binding.layoutEmptyState.isVisible = false
                             binding.layoutResults.isVisible = true
-                            bindTranslationResult(translation)
+
+                            // Update detected source badge
+                            val autoTag = if (translation.isAutoDetected) "(Auto-Detected)" else ""
+                            binding.tvDetectedSource.text = "Input: ${translation.sourceLanguage.flag} ${translation.sourceLanguage.displayName} $autoTag"
+                            binding.tvDetectedSource.isVisible = true
+
+                            // Hide the source language chip from targets
+                            binding.chipTargetEnglish.isVisible = (translation.sourceLanguage != Language.ENGLISH)
+                            binding.chipTargetGerman.isVisible = (translation.sourceLanguage != Language.GERMAN)
+                            binding.chipTargetNepali.isVisible = (translation.sourceLanguage != Language.NEPALI)
+                            binding.chipTargetHindi.isVisible = (translation.sourceLanguage != Language.HINDI)
+
+                            bindAllTranslationCards(translation)
+                            updateResultsVisibility()
                         } else {
                             binding.layoutEmptyState.isVisible = true
                             binding.layoutResults.isVisible = false
+                            binding.tvDetectedSource.isVisible = false
                         }
                     }
                 }
@@ -164,10 +206,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun bindTranslationResult(result: CombinedTranslation) {
-        bindCard(binding.cardGerman, result.german, result.query)
-        bindCard(binding.cardNepali, result.nepali, result.query)
-        bindCard(binding.cardHindi, result.hindi, result.query)
+    private fun bindAllTranslationCards(result: CombinedTranslation) {
+        val english = result.getTranslation(Language.ENGLISH)
+        val german = result.getTranslation(Language.GERMAN)
+        val nepali = result.getTranslation(Language.NEPALI)
+        val hindi = result.getTranslation(Language.HINDI)
+
+        if (english != null) bindCard(binding.cardEnglish, english, result.query)
+        if (german != null) bindCard(binding.cardGerman, german, result.query)
+        if (nepali != null) bindCard(binding.cardNepali, nepali, result.query)
+        if (hindi != null) bindCard(binding.cardHindi, hindi, result.query)
     }
 
     private fun bindCard(
@@ -180,7 +228,6 @@ class MainActivity : AppCompatActivity() {
         cardBinding.tvSourceBadge.text = translation.source.label
         cardBinding.tvTranslatedWord.text = translation.translatedText
 
-        // Phonetic or part of speech
         val phoneticInfo = buildString {
             if (!translation.phonetic.isNullOrBlank()) append(translation.phonetic)
             if (!translation.partOfSpeech.isNullOrBlank()) {
@@ -191,7 +238,6 @@ class MainActivity : AppCompatActivity() {
         cardBinding.tvPhonetic.isVisible = phoneticInfo.isNotEmpty()
         cardBinding.tvPhonetic.text = phoneticInfo
 
-        // Examples
         val hasExample = !translation.exampleTarget.isNullOrBlank()
         cardBinding.layoutExample.isVisible = hasExample
         if (hasExample) {
@@ -199,11 +245,9 @@ class MainActivity : AppCompatActivity() {
             cardBinding.tvExampleEnglish.text = translation.exampleEnglish
         }
 
-        // Bookmark Icon
         val bookmarkRes = if (translation.isBookmarked) R.drawable.ic_bookmark else R.drawable.ic_bookmark_border
         cardBinding.btnBookmark.setIconResource(bookmarkRes)
 
-        // Actions
         cardBinding.btnSpeak.setOnClickListener {
             ttsHelper.speak(translation.translatedText, translation.language)
         }
@@ -221,29 +265,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun applyFilterVisibility(filter: SelectedLanguageFilter) {
-        when (filter) {
-            SelectedLanguageFilter.ALL -> {
-                binding.cardGerman.root.isVisible = true
-                binding.cardNepali.root.isVisible = true
-                binding.cardHindi.root.isVisible = true
-            }
-            SelectedLanguageFilter.GERMAN -> {
-                binding.cardGerman.root.isVisible = true
-                binding.cardNepali.root.isVisible = false
-                binding.cardHindi.root.isVisible = false
-            }
-            SelectedLanguageFilter.NEPALI -> {
-                binding.cardGerman.root.isVisible = false
-                binding.cardNepali.root.isVisible = true
-                binding.cardHindi.root.isVisible = false
-            }
-            SelectedLanguageFilter.HINDI -> {
-                binding.cardGerman.root.isVisible = false
-                binding.cardNepali.root.isVisible = false
-                binding.cardHindi.root.isVisible = true
-            }
-        }
+    private fun updateResultsVisibility() {
+        val current = viewModel.currentTranslation.value ?: return
+        val filter = viewModel.selectedTargetFilter.value
+        val source = current.sourceLanguage
+
+        // English Card
+        binding.cardEnglish.root.isVisible = (source != Language.ENGLISH) &&
+                (filter == SelectedTargetFilter.ALL || filter == SelectedTargetFilter.ENGLISH)
+
+        // German Card
+        binding.cardGerman.root.isVisible = (source != Language.GERMAN) &&
+                (filter == SelectedTargetFilter.ALL || filter == SelectedTargetFilter.GERMAN)
+
+        // Nepali Card
+        binding.cardNepali.root.isVisible = (source != Language.NEPALI) &&
+                (filter == SelectedTargetFilter.ALL || filter == SelectedTargetFilter.NEPALI)
+
+        // Hindi Card
+        binding.cardHindi.root.isVisible = (source != Language.HINDI) &&
+                (filter == SelectedTargetFilter.ALL || filter == SelectedTargetFilter.HINDI)
     }
 
     private fun copyToClipboard(text: String) {
@@ -254,7 +295,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun shareTranslation(query: String, translation: SingleTranslation) {
-        val shareText = "English: $query\n${translation.language.displayName}: ${translation.translatedText}\n\nTranslated with Any-Translate"
+        val shareText = "${translation.language.displayName}: ${translation.translatedText}\n(Input: $query)\n\nTranslated with Any-Translate"
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, shareText)

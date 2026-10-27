@@ -74,8 +74,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    // Google ML Kit On-Device Translation
+    // Google ML Kit On-Device Translation & Language ID
     implementation(libs.google.mlkit.translate)
+    implementation(libs.google.mlkit.language.id)
 
     // Google Mobile Ads (AdMob)
     implementation(libs.google.play.services.ads)

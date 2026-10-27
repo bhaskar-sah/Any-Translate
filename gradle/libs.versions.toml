@@ -11,6 +11,7 @@ lifecycle = "2.8.1"
 room = "2.6.1"
 coroutines = "1.8.1"
 mlkitTranslate = "17.0.3"
+mlkitLanguageId = "17.0.6"
 playServicesAds = "23.1.0"
 okhttp = "4.12.0"
 gson = "2.11.0"
@@ -36,8 +37,9 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
-# Google ML Kit Translation
+# Google ML Kit Translation & Language Identification
 google-mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref = "mlkitTranslate" }
+google-mlkit-language-id = { group = "com.google.mlkit", name = "language-id", version.ref = "mlkitLanguageId" }
 
 # Google Mobile Ads (AdMob)
 google-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }

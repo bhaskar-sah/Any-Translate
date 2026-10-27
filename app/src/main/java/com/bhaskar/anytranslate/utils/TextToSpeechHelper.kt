@@ -28,10 +28,10 @@ class TextToSpeechHelper(private val context: Context) : TextToSpeech.OnInitList
         }
 
         val locale = when (language) {
+            Language.ENGLISH -> Locale.US
             Language.GERMAN -> Locale.GERMAN
             Language.HINDI -> Locale("hi", "IN")
             Language.NEPALI -> {
-                // Nepali TTS falls back to Hindi / Indo-Aryan acoustic engine if Nepali is not installed
                 val neLocale = Locale("ne", "NP")
                 val result = tts?.setLanguage(neLocale)
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {

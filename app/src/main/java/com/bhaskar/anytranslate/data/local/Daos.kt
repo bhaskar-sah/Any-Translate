@@ -4,15 +4,33 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DictionaryDao {
     @Query("SELECT * FROM dictionary WHERE LOWER(english_word) = LOWER(:word) LIMIT 1")
-    suspend fun findByWord(word: String): DictionaryEntity?
+    suspend fun findByEnglishWord(word: String): DictionaryEntity?
 
-    @Query("SELECT * FROM dictionary WHERE LOWER(english_word) LIKE LOWER(:prefix || '%') ORDER BY english_word ASC LIMIT 10")
+    @Query("""
+        SELECT * FROM dictionary 
+        WHERE LOWER(english_word) = LOWER(:query)
+           OR LOWER(german_meaning) = LOWER(:query)
+           OR LOWER(hindi_meaning) = LOWER(:query)
+           OR LOWER(hindi_translit) = LOWER(:query)
+           OR LOWER(nepali_meaning) = LOWER(:query)
+           OR LOWER(nepali_translit) = LOWER(:query)
+        LIMIT 1
+    """)
+    suspend fun findAnyMatch(query: String): DictionaryEntity?
+
+    @Query("""
+        SELECT * FROM dictionary 
+        WHERE LOWER(english_word) LIKE LOWER(:prefix || '%')
+           OR LOWER(german_meaning) LIKE LOWER(:prefix || '%')
+           OR LOWER(hindi_meaning) LIKE LOWER(:prefix || '%')
+           OR LOWER(nepali_meaning) LIKE LOWER(:prefix || '%')
+        ORDER BY english_word ASC LIMIT 10
+    """)
     suspend fun searchPrefix(prefix: String): List<DictionaryEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
